@@ -1,8 +1,9 @@
 import js from '@eslint/js';
 import eslintConfigPrettier from 'eslint-config-prettier';
+import importPlugin from 'eslint-plugin-import';
+import onlyWarn from 'eslint-plugin-only-warn';
 import turboPlugin from 'eslint-plugin-turbo';
 import tseslint from 'typescript-eslint';
-import onlyWarn from 'eslint-plugin-only-warn';
 
 /**
  * A shared ESLint configuration for the repository.
@@ -24,6 +25,37 @@ export const config = [
   {
     plugins: {
       onlyWarn,
+    },
+  },
+  {
+    plugins: {
+      import: importPlugin,
+    },
+    rules: {
+      'import/order': [
+        'warn',
+        {
+          alphabetize: {
+            caseInsensitive: true,
+            order: 'asc',
+          },
+          groups: ['builtin', 'external', 'internal'],
+          'newlines-between': 'always',
+          pathGroups: [
+            {
+              group: 'external',
+              pattern: '{@repo/*,@repo/**}',
+              position: 'after',
+            },
+            {
+              group: 'external',
+              pattern: '{@/**}',
+              position: 'after',
+            },
+          ],
+          pathGroupsExcludedImportTypes: ['react'],
+        },
+      ],
     },
   },
   {
