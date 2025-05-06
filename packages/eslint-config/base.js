@@ -26,6 +26,17 @@ export const config = [
     plugins: {
       onlyWarn,
     },
+    rules: {
+      '@typescript-eslint/consistent-type-imports': 'warn',
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+        },
+      ],
+      'no-console': 'warn',
+    },
   },
   {
     plugins: {
@@ -44,6 +55,11 @@ export const config = [
           pathGroups: [
             {
               group: 'external',
+              pattern: 'react',
+              position: 'before',
+            },
+            {
+              group: 'external',
               pattern: '{@repo/*,@repo/**}',
               position: 'after',
             },
@@ -59,6 +75,6 @@ export const config = [
     },
   },
   {
-    ignores: ['dist/**'],
+    ignores: ['dist/**', 'node_modules'],
   },
 ];
