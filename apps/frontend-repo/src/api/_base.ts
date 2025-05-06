@@ -3,8 +3,8 @@ import 'server-only';
 import { getAuthTokenCookie } from '@/lib/auth-token-cookie';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type Body = Record<string, any>;
-type Query = Record<string, unknown>;
+export type Body = Record<string, any>;
+export type Query = Record<string, unknown>;
 
 interface Options<TQuery extends Query = Query, TBody extends Body = Body> {
   body?: TBody;

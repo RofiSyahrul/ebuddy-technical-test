@@ -3,7 +3,9 @@ import { Timestamp, type CollectionReference } from 'firebase-admin/firestore';
 import type {
   CreateUserPayload,
   UpdateUserPayload,
+  UpdateUserPayloadWithId,
   User,
+  UserResponseItem,
 } from '@repo/dto/user';
 
 import { db } from '@/config/firebase-config.js';
@@ -17,17 +19,25 @@ const LIMIT = 10;
 
 export const findManyUsers = async ({ page }: { page: number }) => {
   const snapshot = await userCollection
+    .orderBy('recentlyActive', 'desc')
     .limit(LIMIT)
     .offset((page - 1) * LIMIT)
     .get();
 
   if (snapshot.empty) return [];
-  return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+
+  return snapshot.docs.map<UserResponseItem>((doc) => {
+    const { recentlyActive, ...item } = doc.data();
+    const lastActive = recentlyActive.toDate().toISOString();
+    return {
+      id: doc.id,
+      lastActive,
+      ...item,
+    };
+  });
 };
 
-export const updateManyUsers = async (
-  users: Array<{ id: string } & Partial<User>>,
-) => {
+export const updateManyUsers = async (users: UpdateUserPayloadWithId[]) => {
   let batch = db.batch();
   let currentBatchSize = 0;
 
@@ -48,10 +58,16 @@ export const updateManyUsers = async (
   }
 };
 
-export const findUser = async (id: string) => {
+export const findUser = async (
+  id: string,
+): Promise<UserResponseItem | null> => {
   const user = await userCollection.doc(id).get();
   const data = user.data();
-  return data;
+  if (!data) {
+    return null;
+  }
+  const { recentlyActive, ...detail } = data;
+  return { id, lastActive: recentlyActive.toDate().toISOString(), ...detail };
 };
 
 export const createUser = async (id: string, user: CreateUserPayload) => {

@@ -1,6 +1,10 @@
 import invariant from 'tiny-invariant';
 
-import type { UpdateUserPayload, User } from '@repo/dto/user';
+import type {
+  UpdateUserPayload,
+  UpdateUserPayloadWithId,
+  UserResponseItem,
+} from '@repo/dto/user';
 
 import {
   findUser,
@@ -15,7 +19,7 @@ import { ErrorResponse, successResponse } from '@/utils/response.js';
 
 export const getUsers: AuthorizedRequestHandler<
   unknown,
-  SuccessResponse<Array<User & { id: string }>>,
+  SuccessResponse<UserResponseItem[]>,
   unknown,
   { page?: number }
 > = async (req, res) => {
@@ -27,7 +31,7 @@ export const getUsers: AuthorizedRequestHandler<
 export const updateUsers: AuthorizedRequestHandler<
   unknown,
   unknown,
-  { data: Array<{ id: string } & Partial<User>> }
+  { data: UpdateUserPayloadWithId[] }
 > = async (req, res) => {
   invariant(
     req.body?.data,
@@ -59,10 +63,7 @@ export const updateCurrentUser: AuthorizedRequestHandler<
 > = async (req, res) => {
   const { userId } = res.locals;
   invariant(req.body, 'Request body is required');
-  const updatedUser: UpdateUserPayload = {
-    email: req.body.email,
-    name: req.body.name,
-  };
+  const updatedUser: UpdateUserPayload = { name: req.body.name };
   await updateUser(userId, updatedUser);
   res.status(200).json(successResponse({ success: true }));
 };

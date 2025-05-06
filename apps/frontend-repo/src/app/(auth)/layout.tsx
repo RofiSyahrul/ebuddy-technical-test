@@ -1,11 +1,32 @@
 import type { ReactNode } from 'react';
 
 import BaseBox from '@mui/material/Box';
+import { redirect, RedirectType } from 'next/navigation';
+
+import { getCurrentUser } from '@/api/user';
 
 import AuthTabs from './auth-tabs';
 import { Box } from './styles';
 
-export default function AuthLayout({ children }: { children: ReactNode }) {
+async function checkIsLoggedIn() {
+  try {
+    await getCurrentUser();
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export default async function AuthLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const isLoggedIn = await checkIsLoggedIn();
+  if (isLoggedIn) {
+    redirect('/', RedirectType.replace);
+  }
+
   return (
     <BaseBox
       display='flex'

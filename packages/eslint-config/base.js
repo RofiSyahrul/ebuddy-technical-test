@@ -64,9 +64,9 @@ export const config = [
               position: 'after',
             },
             {
-              group: 'external',
-              pattern: '{@/**}',
-              position: 'after',
+              group: 'internal',
+              pattern: '@/**',
+              position: 'before',
             },
           ],
           pathGroupsExcludedImportTypes: ['react'],

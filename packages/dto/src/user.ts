@@ -7,4 +7,13 @@ export interface User {
 }
 
 export type CreateUserPayload = Pick<User, 'email' | 'name'>;
-export type UpdateUserPayload = Partial<Omit<User, 'recentlyActive'>>;
+export type UpdateUserPayload = Partial<Omit<User, 'email' | 'recentlyActive'>>;
+
+export interface UserResponseItem extends Omit<User, 'recentlyActive'> {
+  id: string;
+  lastActive: string;
+}
+
+export interface UpdateUserPayloadWithId extends UpdateUserPayload {
+  id: string;
+}

@@ -1,4 +1,7 @@
+'use server';
+
 import { cookies } from 'next/headers';
+import { redirect, RedirectType } from 'next/navigation';
 
 const KEY = 'pbbxvr-xrl';
 
@@ -15,4 +18,10 @@ export const setAuthTokenCookie = async (token: string) => {
     path: '/',
     sameSite: 'lax',
   });
+};
+
+export const removeAuthTokenCookieAndRedirect = async () => {
+  const cookieStore = await cookies();
+  cookieStore.delete(KEY);
+  redirect('/login', RedirectType.replace);
 };
