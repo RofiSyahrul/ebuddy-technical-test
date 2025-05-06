@@ -6,7 +6,7 @@ import { styled } from '@mui/material/styles';
 export const Box = styled(BaseBox)`
   display: flex;
   flex-direction: column;
-  height: 250px;
+  height: 320px;
   width: 100%;
   max-width: 768px;
   margin: auto;
@@ -14,10 +14,10 @@ export const Box = styled(BaseBox)`
   border: 1px solid ${({ theme }) => theme.palette.primary.main};
 
   ${({ theme }) => theme.breakpoints.up('sm')} {
-    height: 200px;
+    height: 270px;
   }
 
   ${({ theme }) => theme.breakpoints.up('md')} {
-    height: 105px;
+    height: 170px;
   }
 `;
