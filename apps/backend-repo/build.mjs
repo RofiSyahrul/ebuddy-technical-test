@@ -26,7 +26,7 @@ const options = {
   entryPoints: ['src/index.ts'],
   external: Object.keys(pkg.dependencies),
   format: 'esm',
-  minify: !isDev,
+  minify: false,
   outfile: 'dist/index.js',
   platform: 'node',
 };
