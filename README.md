@@ -1,84 +1,117 @@
-# Turborepo starter
+# eBuddy Technical Test
 
-This Turborepo starter is maintained by the Turborepo core team.
+## About
 
-## Using this example
+This is a monorepo built with Turborepo that contains both frontend and backend applications. The project is structured as follows:
 
-Run the following command:
+### Apps
 
-```sh
-npx create-turbo@latest
-```
+- **frontend-repo**: A Next.js application with Material UI, Redux Toolkit, and Firebase integration
+- **backend-repo**: An Express.js API server with Firebase Admin SDK integration
 
-## What's inside?
+### Packages
 
-This Turborepo includes the following packages/apps:
+- **@repo/dto**: Shared Data Transfer Objects between frontend and backend
+- **@repo/eslint-config**: Shared ESLint configurations
+- **@repo/typescript-config**: Shared TypeScript configurations
 
-### Apps and Packages
+## How To Run Locally
 
-- `backend-repo`: an [Express.js](https://expressjs.com/) app
-- `frontend-repo`: a [Next.js](https://nextjs.org/) app
-- `@repo/dto`: a library to store Data Transfer Object (DTO) for both frontend and backend
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+### Prerequisites
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+- Node.js (version specified in `.nvmrc`)
+- pnpm package manager
 
-### Utilities
+### Setup
 
-This Turborepo has some additional tools already setup for you:
+1. Clone the repository
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+   ```bash
+   git clone <repository-url>
+   cd ebuddy-technical-test
+   ```
 
-### Build
+2. Install dependencies
 
-To build all apps and packages, run the following command:
+   ```bash
+   pnpm install
+   ```
 
-```
-cd my-turborepo
+3. Set up environment variables (see Environment Variables section below)
+
+4. Run the development server
+   ```bash
+   pnpm dev
+   ```
+
+This will start both the frontend and backend applications in development mode.
+
+### Build for Production
+
+```bash
 pnpm build
 ```
 
-### Develop
+## Environment Variables and Secret Files
 
-To develop all apps and packages, run the following command:
+### Backend Application
 
-```
-cd my-turborepo
-pnpm dev
-```
-
-### Remote Caching
-
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
+Create a `.env` file in the `apps/backend-repo` directory with the following variables:
 
 ```
-cd my-turborepo
-npx turbo login
+CORS_ALLOWED_ORIGIN=localhost
+PORT=8080
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+Additionally, you'll need:
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+**Firebase Admin SDK Service Account**:
+
+- The backend uses Firebase Admin SDK with application default credentials
+- Place your Firebase service account key file in a location accessible by the application (`./apps/backend-repo/service-account.json`)
+
+### Frontend Application
+
+Create a `.env.local` file in the `apps/frontend-repo` directory with the following variables:
 
 ```
-npx turbo link
+NEXT_PUBLIC_API_URL=http://localhost:8080
+NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_api_key
+NEXT_PUBLIC_FIREBASE_APP_ID=your_firebase_app_id
+NEXT_PUBLIC_GCLOUD_PROJECT=your_gcloud_project_id
 ```
 
-## Useful Links
+## Development Workflow
 
-Learn more about the power of Turborepo:
+- **Running specific apps**: You can use the `--filter` flag to run commands for specific apps:
 
-- [Tasks](https://turborepo.com/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.com/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.com/docs/reference/configuration)
-- [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
+  ```bash
+  pnpm dev --filter frontend-repo
+  pnpm dev --filter backend-repo
+  ```
+
+- **Linting**: Run ESLint across all projects:
+  ```bash
+  pnpm lint
+  ```
+
+## Project Structure
+
+```
+.
+├── apps/
+│   ├── backend-repo/    # Express.js backend
+│   └── frontend-repo/   # Next.js frontend
+├── packages/
+│   ├── dto/             # Shared data transfer objects
+│   ├── eslint-config/   # Shared ESLint configuration
+│   └── typescript-config/ # Shared TypeScript configuration
+└── ...
+```
+
+## Technologies Used
+
+- **Frontend**: Next.js, React, Material UI, Redux Toolkit, Firebase
+- **Backend**: Express.js, Firebase Admin SDK
+- **Build Tools**: Turborepo, esbuild
+- **Languages**: TypeScript
