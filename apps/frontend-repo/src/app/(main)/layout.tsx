@@ -7,6 +7,7 @@ import type { UserResponseItem } from '@repo/dto/user';
 import { getCurrentUser, getUsers } from '@/api/user';
 
 import Header from './components/header';
+import SaveButton from './components/save-button';
 import StoreProvider from './store-provider';
 
 const safeFetchAllData = async (): Promise<
@@ -34,6 +35,7 @@ export default async function Layout({ children }: PropsWithChildren) {
     <StoreProvider currentUser={currentUser} users={users}>
       <Header />
       <main>{children}</main>
+      <SaveButton />
     </StoreProvider>
   );
 }

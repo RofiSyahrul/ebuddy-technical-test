@@ -8,6 +8,7 @@ export default function Users() {
   return (
     <TableContainer sx={{ maxHeight: 'calc(100vh - 90px)' }}>
       <Table stickyHeader>
+        <caption style={{ captionSide: 'top' }}>Users Data</caption>
         <TableHead />
         <TableBody />
       </Table>

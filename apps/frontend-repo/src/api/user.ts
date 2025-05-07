@@ -28,6 +28,7 @@ export const updateUsers = async (users: UpdateUserPayloadWithId[]) => {
     BASE_PATH,
     {
       body: { data: users },
+      method: 'PUT',
     },
   );
 };
@@ -42,5 +43,6 @@ export const getCurrentUser = async () => {
 export const updateCurrentUser = async (payload: UpdateUserPayload) => {
   await fetcher<unknown, Query, UpdateUserPayload>(BASE_PATH + '/current', {
     body: payload,
+    method: 'PUT',
   });
 };

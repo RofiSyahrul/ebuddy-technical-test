@@ -6,7 +6,7 @@ import type {
   UserResponseItem,
 } from '@repo/dto/user';
 
-interface UsersSliceState {
+export interface UsersSliceState {
   current: UserResponseItem;
   dataMap: Record<string, UserResponseItem>;
   updated: {
@@ -38,6 +38,25 @@ export const usersSlice = createSlice({
         action.payload.map((user) => [user.id, user]),
       );
     }),
+
+    saveAll: creation.reducer((draft) => {
+      const { current, dataMap } = draft.updated;
+
+      if (current) {
+        draft.current = { ...draft.current, ...current };
+        draft.updated.current = null;
+      }
+
+      draft.dataMap = Object.fromEntries(
+        Object.values(draft.dataMap).map((user) => [
+          user.id,
+          { ...user, ...dataMap[user.id] },
+        ]),
+      );
+
+      draft.updated.dataMap = {};
+    }),
+
     updateCurrentUser: creation.reducer<UpdateUserPayload>((draft, action) => {
       const { name } = action.payload;
       if (name && name !== draft.current.name) {
@@ -46,6 +65,7 @@ export const usersSlice = createSlice({
         draft.updated.current = null;
       }
     }),
+
     updateUser: creation.reducer<UpdateUserPayloadWithId>((draft, action) => {
       const { id, name } = action.payload;
       if (id === draft.current.id) {
@@ -62,12 +82,8 @@ export const usersSlice = createSlice({
       }
     }),
   }),
+
   selectors: {
-    hasUnsavedChangesSelector: (state) => {
-      return !!(
-        state.updated.current || Object.keys(state.updated.dataMap).length
-      );
-    },
     selectCurrentUserId: (state) => {
       return state.current.id;
     },
@@ -84,13 +100,15 @@ export const usersSlice = createSlice({
 });
 
 export const {
-  hasUnsavedChangesSelector,
   selectCurrentUserId,
   selectCurrentUserName,
   selectUsersMap,
   selectUpdatedUser,
 } = usersSlice.selectors;
 
-const { replaceData, updateCurrentUser, updateUser } = usersSlice.actions;
-
-export { replaceData as replaceUsersData, updateCurrentUser, updateUser };
+export const {
+  replaceData: replaceUsersData,
+  saveAll: saveAllUsersChanges,
+  updateCurrentUser,
+  updateUser,
+} = usersSlice.actions;
