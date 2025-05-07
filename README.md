@@ -27,7 +27,7 @@ This is a monorepo built with Turborepo that contains both frontend and backend 
 1. Clone the repository
 
    ```bash
-   git clone <repository-url>
+   git clone git@github.com:RofiSyahrul/ebuddy-technical-test.git
    cd ebuddy-technical-test
    ```
 
