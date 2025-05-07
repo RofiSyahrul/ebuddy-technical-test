@@ -9,30 +9,33 @@ import {
   selectCurrentUserId,
   selectCurrentUserName,
   selectUpdatedUser,
-  selectUsers,
+  selectUsersMap,
 } from '@/store/users/users-slice';
 
 import Row from './components/row';
 
 function CurrentUserRow({ data }: { data: UserResponseItem }) {
+  const hasChanged = useAppSelector((state) => !!state.users.updated.current);
   const currentUserName = useAppSelector(selectCurrentUserName);
-  return <Row data={{ ...data, name: currentUserName }} />;
+  return (
+    <Row data={{ ...data, name: currentUserName }} hasChanged={hasChanged} />
+  );
 }
 
 function OtherRow({ data }: { data: UserResponseItem }) {
   const updatedUser = useAppSelector((state) => {
     return selectUpdatedUser(state, data.id);
   });
-  return <Row data={{ ...data, ...updatedUser }} />;
+  return <Row data={{ ...data, ...updatedUser }} hasChanged={!!updatedUser} />;
 }
 
 export default function TableBody() {
-  const users = useAppSelector(selectUsers);
+  const usersMap = useAppSelector(selectUsersMap);
   const currentUserId = useAppSelector(selectCurrentUserId);
 
   return (
     <TBody>
-      {users.map((user) => {
+      {Object.values(usersMap).map((user) => {
         if (user.id === currentUserId) {
           return <CurrentUserRow key={user.id} data={user} />;
         }

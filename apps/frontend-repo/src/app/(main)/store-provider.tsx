@@ -23,7 +23,7 @@ export default function StoreProvider({
     storeRef.current = makeStore({
       users: {
         current: currentUser,
-        data: users,
+        dataMap: Object.fromEntries(users.map((user) => [user.id, user])),
         updated: { current: null, dataMap: {} },
       },
     });

@@ -6,7 +6,9 @@ export default function TableHead() {
   return (
     <THead>
       <TableRow>
-        <TableCell style={{ width: 60 }}></TableCell>
+        <TableCell align='center' style={{ minWidth: 100 }}>
+          Actions
+        </TableCell>
         <TableCell style={{ minWidth: 200 }}>Name</TableCell>
         <TableCell style={{ minWidth: 190 }}>Email</TableCell>
         <TableCell style={{ minWidth: 200 }}>Last Active</TableCell>

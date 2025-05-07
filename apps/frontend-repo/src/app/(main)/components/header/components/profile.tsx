@@ -70,21 +70,40 @@ function LetterAvatar() {
   );
 }
 
-function StaticName({ onEdit }: { onEdit: () => void }) {
+function StaticName({
+  onEdit,
+  withSpacer,
+}: {
+  onEdit: () => void;
+  withSpacer: boolean;
+}) {
   const name = useAppSelector(selectCurrentUserName);
   return (
     <>
       <Typography fontWeight={600} noWrap textAlign='center' width={NAME_WIDTH}>
         {name}
       </Typography>
-      <IconButton color='info' onClick={onEdit} size='small' title='Edit'>
+      {withSpacer && <Box height={24} width={24} visibility='hidden' />}
+      <IconButton
+        color='info'
+        onClick={onEdit}
+        size='small'
+        sx={{ p: '0' }}
+        title='Edit'
+      >
         <EditIcon fontSize='small' />
       </IconButton>
     </>
   );
 }
 
-function NameFieldEditor({ onClose }: { onClose: () => void }) {
+function NameFieldEditor({
+  onClose,
+  width,
+}: {
+  onClose: () => void;
+  width: number;
+}) {
   const name = useAppSelector(selectCurrentUserName);
   const dispatch = useAppDispatch();
 
@@ -95,11 +114,6 @@ function NameFieldEditor({ onClose }: { onClose: () => void }) {
     [dispatch],
   );
 
-  const handleRollback = useCallback(() => {
-    dispatch(updateCurrentUser({ name: '' }));
-    onClose();
-  }, [dispatch, onClose]);
-
   return (
     <form action={onClose}>
       <TextField
@@ -109,27 +123,15 @@ function NameFieldEditor({ onClose }: { onClose: () => void }) {
         slotProps={{
           input: {
             endAdornment: (
-              <Box display='flex' alignItems='center' gap='2px'>
-                <IconButton
-                  color='success'
-                  size='small'
-                  title='Temporary Save'
-                  sx={{ p: '0' }}
-                  type='submit'
-                >
-                  <CheckIcon />
-                </IconButton>
-                <IconButton
-                  color='error'
-                  onClick={handleRollback}
-                  size='small'
-                  title='Rollback Changes'
-                  sx={{ p: '0' }}
-                  type='button'
-                >
-                  <SettingsBackupRestoreIcon />
-                </IconButton>
-              </Box>
+              <IconButton
+                color='success'
+                size='small'
+                title='Temporary Save'
+                sx={{ p: '0' }}
+                type='submit'
+              >
+                <CheckIcon />
+              </IconButton>
             ),
             slotProps: {
               input: {
@@ -141,7 +143,7 @@ function NameFieldEditor({ onClose }: { onClose: () => void }) {
             },
           },
         }}
-        sx={{ width: NAME_WIDTH + 34 }}
+        sx={{ width }}
         size='small'
       />
     </form>
@@ -149,11 +151,18 @@ function NameFieldEditor({ onClose }: { onClose: () => void }) {
 }
 
 export default function Profile() {
+  const dispatch = useAppDispatch();
+  const hasChanged = useAppSelector((state) => !!state.users.updated.current);
+
   const [isEditMode, setIsEditMode] = useState(false);
 
   const toggleEditMode = useCallback(() => {
     setIsEditMode((prev) => !prev);
   }, []);
+
+  const handleRollback = useCallback(() => {
+    dispatch(updateCurrentUser({ name: '' }));
+  }, [dispatch]);
 
   return (
     <Box alignItems='center' display='flex' gap='8px'>
@@ -168,9 +177,23 @@ export default function Profile() {
           borderBottom={(theme) => `1px solid ${theme.palette.divider}`}
         >
           {isEditMode ? (
-            <NameFieldEditor onClose={toggleEditMode} />
+            <NameFieldEditor
+              onClose={toggleEditMode}
+              width={NAME_WIDTH + (hasChanged ? 34 : 62)}
+            />
           ) : (
-            <StaticName onEdit={toggleEditMode} />
+            <StaticName onEdit={toggleEditMode} withSpacer={!hasChanged} />
+          )}
+          {hasChanged && (
+            <IconButton
+              color='warning'
+              onClick={handleRollback}
+              size='small'
+              sx={{ p: '0' }}
+              title='Rollback Changes'
+            >
+              <SettingsBackupRestoreIcon />
+            </IconButton>
           )}
         </Box>
         <Button

@@ -1,10 +1,14 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-import type { UpdateUserPayload, UserResponseItem } from '@repo/dto/user';
+import type {
+  UpdateUserPayload,
+  UpdateUserPayloadWithId,
+  UserResponseItem,
+} from '@repo/dto/user';
 
 interface UsersSliceState {
   current: UserResponseItem;
-  data: UserResponseItem[];
+  dataMap: Record<string, UserResponseItem>;
   updated: {
     current: UpdateUserPayload | null;
     dataMap: Partial<Record<string, UpdateUserPayload>>;
@@ -18,7 +22,7 @@ const initialState: UsersSliceState = {
     lastActive: '',
     name: '',
   },
-  data: [],
+  dataMap: {},
   updated: {
     current: null,
     dataMap: {},
@@ -30,8 +34,9 @@ export const usersSlice = createSlice({
   initialState,
   reducers: (creation) => ({
     replaceData: creation.reducer<UserResponseItem[]>((draft, action) => {
-      draft.data = action.payload;
-      draft.updated.dataMap = {};
+      draft.dataMap = Object.fromEntries(
+        action.payload.map((user) => [user.id, user]),
+      );
     }),
     updateCurrentUser: creation.reducer<UpdateUserPayload>((draft, action) => {
       const { name } = action.payload;
@@ -39,6 +44,21 @@ export const usersSlice = createSlice({
         draft.updated.current = { name };
       } else {
         draft.updated.current = null;
+      }
+    }),
+    updateUser: creation.reducer<UpdateUserPayloadWithId>((draft, action) => {
+      const { id, name } = action.payload;
+      if (id === draft.current.id) {
+        usersSlice.caseReducers.updateCurrentUser(
+          draft,
+          usersSlice.actions.updateCurrentUser({ name }),
+        );
+        return;
+      }
+      if (name && name !== draft.dataMap[id]?.name) {
+        draft.updated.dataMap[id] = { name };
+      } else {
+        delete draft.updated.dataMap[id];
       }
     }),
   }),
@@ -54,8 +74,8 @@ export const usersSlice = createSlice({
     selectCurrentUserName: (state) => {
       return state.updated.current?.name ?? state.current.name;
     },
-    selectUsers: (state) => {
-      return state.data;
+    selectUsersMap: (state) => {
+      return state.dataMap;
     },
     selectUpdatedUser: (state, id: string) => {
       return state.updated.dataMap[id];
@@ -67,10 +87,10 @@ export const {
   hasUnsavedChangesSelector,
   selectCurrentUserId,
   selectCurrentUserName,
-  selectUsers,
+  selectUsersMap,
   selectUpdatedUser,
 } = usersSlice.selectors;
 
-const { replaceData, updateCurrentUser } = usersSlice.actions;
+const { replaceData, updateCurrentUser, updateUser } = usersSlice.actions;
 
-export { replaceData as replaceUsersData, updateCurrentUser };
+export { replaceData as replaceUsersData, updateCurrentUser, updateUser };
